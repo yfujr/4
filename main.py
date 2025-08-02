@@ -9,10 +9,6 @@ THREADS = 200
 FILE = 'valid.txt'
 BIRTHDAY = '1999-04-20'
 
-# Phonetic components
-starts = ['lu', 'zo', 'ka', 'le', 'su', 'mi', 'no', 'ze', 'fi', 'vi', 'to', 'ra', 'sa', 'po']
-ends = ['ra', 'no', 'li', 'ka', 'ro', 'to', 'na', 'ko', 'za', 'qi', 'mo', 'vu', 'xi', 'lu', 'en']
-
 # Color formatting
 class bcolors:
     OKBLUE = '\033[94m'
@@ -33,7 +29,8 @@ def make_username():
     else:
         vowels = back_vowels
 
-    consonants = list("bcdfghjklmnpqrstvwxyz")
+    # Exclude 'q' here
+    consonants = list("bcdfghjklmnprstvwxyz")  # removed 'q'
 
     # CVCVC pattern with vowel harmony
     c1 = random.choice(consonants)
@@ -43,7 +40,6 @@ def make_username():
     c3 = random.choice(consonants)
 
     return f"{c1}{v1}{c2}{v2}{c3}"
-
 
 def check_username(username):
     url = f'https://auth.roblox.com/v1/usernames/validate?request.username={username}&request.birthday={BIRTHDAY}'
@@ -104,4 +100,5 @@ except KeyboardInterrupt:
     print("\n[!] Interrupted by user.")
 
 print(f"\n{bcolors.OKBLUE}[!] Finished. {found} usernames saved to {FILE}.{bcolors.ENDC}")
+
 

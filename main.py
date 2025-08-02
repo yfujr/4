@@ -1,19 +1,17 @@
 import requests
 import random
-import string
 import time
 import threading
 
-# Constants
-NAMES = 10  # Total valid usernames to find
-LENGTH = 5
+# Config
+NAMES = 10
 THREADS = 150
 FILE = 'valid.txt'
 BIRTHDAY = '1999-04-20'
 
-# Phonetic pools
-vowels = 'aeiou'
-consonants = ''.join(set(string.ascii_lowercase) - set(vowels))
+# Phonetic components
+starts = ['lu', 'zo', 'ka', 'le', 'su', 'mi', 'no', 'ze', 'fi', 'vi', 'to', 'ra', 'sa', 'po']
+ends = ['ra', 'no', 'li', 'ka', 'ro', 'to', 'na', 'ko', 'za', 'qi', 'mo', 'vu', 'xi', 'lu', 'en']
 
 # Color formatting
 class bcolors:
@@ -25,27 +23,12 @@ class bcolors:
 found = 0
 lock = threading.Lock()
 
-def success(username, thread_id):
-    global found
-    with lock:
-        found += 1
-        print(f"{bcolors.OKBLUE}[{found}/{NAMES}] [+] Found Username: {username} [T{thread_id}]{bcolors.ENDC}")
-        with open(FILE, 'a+') as f:
-            f.write(f"{username}\n")
-
-def taken(username, thread_id):
-    print(f'{bcolors.FAIL}[-] {username} is taken [T{thread_id}]{bcolors.ENDC}')
-
-def make_username(length):
-    patterns = ['cvcvc', 'cvccv', 'ccvvc']
-    pattern = random.choice(patterns)
-    name = ''
-    for ch in pattern:
-        if ch == 'c':
-            name += random.choice(consonants)
-        else:
-            name += random.choice(vowels)
-    return name[:length]
+def make_username():
+    # Build a pseudo-syllabic 5-letter name
+    start = random.choice(starts)
+    end = random.choice(ends)
+    name = (start + end)[:5]
+    return name
 
 def check_username(username):
     url = f'https://auth.roblox.com/v1/usernames/validate?request.username={username}&request.birthday={BIRTHDAY}'
@@ -58,6 +41,17 @@ def check_username(username):
     except:
         return None, None
 
+def success(username, thread_id):
+    global found
+    with lock:
+        found += 1
+        print(f"{bcolors.OKBLUE}[{found}/{NAMES}] [+] Found Username: {username} [T{thread_id}]{bcolors.ENDC}")
+        with open(FILE, 'a+') as f:
+            f.write(f"{username}\n")
+
+def taken(username, thread_id):
+    print(f'{bcolors.FAIL}[-] {username} is taken [T{thread_id}]{bcolors.ENDC}')
+
 def worker(thread_id):
     global found
     while True:
@@ -65,7 +59,7 @@ def worker(thread_id):
             if found >= NAMES:
                 break
 
-        username = make_username(LENGTH)
+        username = make_username()
         result, status = check_username(username)
 
         if status == 429:
@@ -81,7 +75,7 @@ def worker(thread_id):
             taken(username, thread_id)
 
 # Start threads
-print(f"[*] Starting {THREADS} threads. Looking for {NAMES} usernames.\n")
+print(f"[*] Starting {THREADS} threads. Looking for {NAMES} aesthetic usernames.\n")
 threads = []
 for i in range(THREADS):
     t = threading.Thread(target=worker, args=(i+1,), daemon=True)
@@ -95,3 +89,4 @@ except KeyboardInterrupt:
     print("\n[!] Interrupted by user.")
 
 print(f"\n{bcolors.OKBLUE}[!] Finished. {found} usernames saved to {FILE}.{bcolors.ENDC}")
+

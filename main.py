@@ -5,7 +5,7 @@ import threading
 
 # Config
 NAMES = 10
-THREADS = 150
+THREADS = 200
 FILE = 'valid.txt'
 BIRTHDAY = '1999-04-20'
 

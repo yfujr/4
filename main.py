@@ -24,11 +24,26 @@ found = 0
 lock = threading.Lock()
 
 def make_username():
-    # Build a pseudo-syllabic 5-letter name
-    start = random.choice(starts)
-    end = random.choice(ends)
-    name = (start + end)[:5]
-    return name
+    front_vowels = ['e', 'i']
+    back_vowels = ['a', 'o', 'u']
+
+    # Pick vowel group
+    if random.random() < 0.5:
+        vowels = front_vowels
+    else:
+        vowels = back_vowels
+
+    consonants = list("bcdfghjklmnpqrstvwxyz")
+
+    # CVCVC pattern with vowel harmony
+    c1 = random.choice(consonants)
+    v1 = random.choice(vowels)
+    c2 = random.choice(consonants)
+    v2 = random.choice(vowels)
+    c3 = random.choice(consonants)
+
+    return f"{c1}{v1}{c2}{v2}{c3}"
+
 
 def check_username(username):
     url = f'https://auth.roblox.com/v1/usernames/validate?request.username={username}&request.birthday={BIRTHDAY}'
